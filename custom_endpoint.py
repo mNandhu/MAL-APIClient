@@ -68,8 +68,6 @@ class EndPoint:
             'Authorization': f'Bearer {access_token}'
         })
         response.raise_for_status()
-        out = response.json()
-        print(out)
         response.close()
 
 
