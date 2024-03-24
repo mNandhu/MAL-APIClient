@@ -1,4 +1,4 @@
-# ANIWATCH-TO-MAL API
+# AniWatch to MAL Using MALAPI
 
 A simple pastime to compare local data from aniwatch/anime watching sites watchlist with MAL's watchlist
 Using MAL API to Get a Public list of a user and compare it with the local list
