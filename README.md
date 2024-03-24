@@ -32,8 +32,8 @@ Installing:
    Which can be obtained by, selecting yes for "Add Missing Entries to MAL List" and following the steps
    or by running custom_endpoint.py
 
-Open the link and allow auth from MAL which will open this GithubRepo
-"https://github.com/mNandhu/mal_api_client?code=adjhadsjhsajkhda..."
-Copy and paste adjhadsjhsajkhda... part in the terminal
+   Open the link and allow auth from MAL which will open this GithubRepo
+   "https://github.com/mNandhu/mal_api_client?code=adjhadsjhsajkhda..."
+   Copy and paste adjhadsjhsajkhda... part in the terminal
 
 TODO: Exception Handling and Code Cleanup
