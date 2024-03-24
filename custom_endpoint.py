@@ -76,6 +76,13 @@ class EndPoint:
 
     @staticmethod
     def add_entry(access_token: str, anime_id: int, status: str):
+        """
+        Method to add a new AnimeEntry to the MAList
+        :param access_token: user Token
+        :param anime_id:
+        :param status: completed/on_hold/plan_to_watch/dropped/watching
+        :return:
+        """
         url = f'https://api.myanimelist.net/v2/anime/{anime_id}/my_list_status'
         data = {'status': status}
         response = requests.put(url, data=data, headers={
@@ -86,6 +93,7 @@ class EndPoint:
 
 
 if __name__ == '__main__':
+    # Testing
     with open('.env', 'r') as f:
         CLIENT_ID = f.readline().strip()
         # auth_code = f.readline().strip()

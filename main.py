@@ -8,8 +8,8 @@ def get_mal_dict(client_id: str, username: str, get_new_list: int or bool, limit
     """
     Get the MAL list
     if (get_new_list) is set to 1, get the list from the MAL API and save it to a file
-    if (get_new_list) is set to 0, load the list from the file
-    return the MAL list as a dictionary as {anime_id: (anime_title, status), ...}
+    else, load the list from the file
+    return the MAL list as a dictionary - {anime_id: (anime_title, status), ...}
     :param client_id:
     :param username:
     :param get_new_list:
@@ -27,8 +27,13 @@ def get_mal_dict(client_id: str, username: str, get_new_list: int or bool, limit
         with open('mal_list.data', 'wb') as g:  # Save the data to a file
             pickle.dump(api_mal_dict, g)
     else:
-        with open('mal_list.data', 'rb') as g:  # Load the data from the file if you get_new_list is set to 0
-            api_mal_dict = pickle.load(g)
+        try:
+            with open('mal_list.data', 'rb') as g:  # Load the data from the file if (get_new_list) is set to 0
+                api_mal_dict = pickle.load(g)
+        except FileNotFoundError:
+            print("MAL_LIST doesn't already exist, set get_new_mal_list = 1")
+            exit(-1)
+
     return api_mal_dict
 
 
@@ -39,8 +44,12 @@ def get_aniwatch_dict(file_path: str) -> dict:
     :param file_path:
     :return:
     """
-    with open(file_path, 'r') as g:
-        data = list(csv.reader(g, delimiter='|'))
+    try:
+        with open(file_path, 'r') as g:
+            data = list(csv.reader(g, delimiter='|'))
+    except FileNotFoundError:
+        print("File doesn't exist")
+        exit(-1)
 
     ani_dict = {}
     status_tag = ''
@@ -50,16 +59,19 @@ def get_aniwatch_dict(file_path: str) -> dict:
         else:
             anime_name, anime_url = entry
             ani_dict[int(anime_url[anime_url.rfind('/') + 1:])] = (anime_name.strip(), status_tag)
+    if not status_tag:
+        print("AniWatch Data doesn't have 'status' ")
+        exit(-1)
 
     return ani_dict
 
 
 def find_missing_entries(dict1, dict2):
     """
-    Find the entries in dict2 that are not in dict1
-    :param dict1: {anime_id: anime_title, ...}
-    :param dict2: {anime_id: anime_title, ...}
-    :return:  {anime_id: anime_title, ...} where anime_id is in dict2 but not in dict1
+    Find the entries in dict2 that are not in dict1 aka (dict2 - dict1)
+    :param dict1: {anime_id: (anime_title, status), ...}
+    :param dict2: {anime_id: (anime_title, status), ...}
+    :return:  {anime_id: (anime_title, status), ...} # Entries in dict2 but not in dict1
     """
     missing_entries = {}
     for element in dict2:
@@ -75,8 +87,8 @@ if __name__ == '__main__':
     # CLIENT_ID = 'your_client_id'
 
     # ---Configuration variables-------------------------
-    new_user_token = 1  # Set to 1 if you want to get a new user token
-    new_list = 1  # Set to 1 if you want to get a new list from MAL
+    get_new_user_token = 1  # Set to 1 if you want to get a new user token
+    get_new_mal_list = 1  # Set to 1 if you want to get a new list from MAL
     import_limit = 400  # Number of entries to get from the MAL list
     # ---------------------------------------------------
 
@@ -84,8 +96,8 @@ if __name__ == '__main__':
     # Path to the aniwatch export file
     aniwatch_file_path = input('Enter the path to the aniwatch export file: ').strip('"\' ')
 
-    # Get the MAL and aniwatch lists
-    mal_dict = get_mal_dict(CLIENT_ID, mal_username, new_list, limit=import_limit)
+    # Get the MAL and aniwatch lists as dictionaries
+    mal_dict = get_mal_dict(CLIENT_ID, mal_username, get_new_mal_list, limit=import_limit)
     aniwatch_dict = get_aniwatch_dict(aniwatch_file_path)
 
     # Find the missing entries
@@ -95,8 +107,7 @@ if __name__ == '__main__':
           f"Number of entries in Aniwatch: {len(aniwatch_dict)}",
           f"Missing Entries ({len(aniwatch_dict) - len(mal_dict)}):",
           f"{'-' * 50}",
-          f"In AniWatch but not in MAL:"
-          , sep='\n')
+          f"In AniWatch but not in MAL:", sep='\n')
     for key in not_in_mal:
         print(f"{key}: {not_in_mal[key]}")
 
@@ -112,22 +123,34 @@ if __name__ == '__main__':
 
     if input("Do you want to add the missing entries to your MAL List(y/n)?").lower() == 'y':
         endpoint = custom_endpoint.EndPoint(CLIENT_ID)
-        if new_user_token:
+        if get_new_user_token:
             print(
                 "Adding entries to your MAL List will require you to authorise this application to access your MAL "
                 "account")
             endpoint.print_new_authorisation_url()  # Print the URL to get the authorisation code
+
+            # I have set the mal api redirect url as my repo, so it opens that sit with param code
+            print("mal_api_client git repo will open and from its url, copy the code (from after the code= part)")
+
+            # Get the auth code
             endpoint.authorisation_code = input("Enter the authorisation code from the URL: ")
 
+            # Generate new user token based on auth code
             user_token = endpoint.generate_new_token()
         else:
             from json import load as json_load
 
-            with open('token.json', 'r') as file:
-                user_token = json_load(file)
+            # If already user token is created, reuse previous
+            try:
+                with open('token.json', 'r') as file:
+                    user_token = json_load(file)
+            except FileNotFoundError:
+                print("User Token doesn't already exist, set get_new_user_token = 1")
+                exit(-1)
 
-        endpoint.print_user_info(user_token['access_token'])
+        endpoint.print_user_info(user_token['access_token'])  # Print UserName for confirmation
 
+        # Add the missing entries by id and update status
         for key in not_in_mal:
             # not_in_mal = {anime_id: (anime_title, status), ...}
             endpoint.add_entry(access_token=user_token['access_token'], anime_id=key, status=not_in_mal[key][1])
