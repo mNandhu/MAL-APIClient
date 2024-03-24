@@ -1,8 +1,8 @@
 # AniWatch to MAL Using MALAPI
 
-A simple pastime to compare local data from aniwatch/anime watching sites watchlist with MAL's watchlist
+A simple pastime project to compare local data from aniwatch/anime watching sites watchlist with MAL's watchlist and adding missing entries 
 Using MAL API to Get a Public list of a user and compare it with the local list
-and find missing entries
+and find missing entries and then adds them
 
 Version1: Code to find the missing entries
 TODO: Automatically add missing entries from aniwatch to mal
@@ -28,12 +28,12 @@ Installing:
    Paste it in the project directory
 
 8) Authorisation:
-   In order to add new entries to your anime list, the auth_code is needed
-   Which can be obtained by, selecting yes for "Add Missing Entries to MAL List" and following the steps
+   To add new entries to your anime list, the auth_code is needed
+   This can be obtained by, selecting yes for "Add Missing Entries to MAL List" and following the steps
    or by running custom_endpoint.py
 
    Open the link and allow auth from MAL which will open this GithubRepo
-   "https://github.com/mNandhu/mal_api_client?code=adjhadsjhsajkhda..."
+   ```https://github.com/mNandhu/mal_api_client?code=adjhadsjhsajkhda...```
    Copy and paste adjhadsjhsajkhda... part in the terminal
 
 TODO: Exception Handling and Code Cleanup
