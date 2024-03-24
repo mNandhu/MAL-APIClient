@@ -71,15 +71,18 @@ def find_missing_entries(dict1, dict2):
 if __name__ == '__main__':
     with open('.env', 'r') as f:
         CLIENT_ID = f.readline().strip()
+    # Or Enter Client ID here:
+    # CLIENT_ID = 'your_client_id'
 
     # ---Configuration variables-------------------------
-    new_user_token = 0  # Set to 1 if you want to get a new user token
-    new_list = 0  # Set to 1 if you want to get a new list from MAL
+    new_user_token = 1  # Set to 1 if you want to get a new user token
+    new_list = 1  # Set to 1 if you want to get a new list from MAL
     import_limit = 400  # Number of entries to get from the MAL list
     # ---------------------------------------------------
 
     mal_username = input('Enter your MAL Username: ')  # Your MAL username
-    aniwatch_file_path = input('Enter the path to the aniwatch export file')  # Path to the aniwatch export file
+    # Path to the aniwatch export file
+    aniwatch_file_path = input('Enter the path to the aniwatch export file: ').strip('"\' ')
 
     # Get the MAL and aniwatch lists
     mal_dict = get_mal_dict(CLIENT_ID, mal_username, new_list, limit=import_limit)
