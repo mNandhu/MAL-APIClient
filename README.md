@@ -24,5 +24,6 @@ Paste it in the project directory
 Running
 Open cmd at that location and enter 
 ```py main.py ```
-
+1) Enter your MAL UserName
+2) Path of the export file can be copied by right-clicking and selecting "copy as path"
 TODO: Exception Handling and Code Cleanup
